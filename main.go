@@ -21,6 +21,16 @@ func welcomeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: /api/welcome")
 }
 
+func connectDB() bool {
+	dsn := "uaa:password@tcp(127.0.0.1:30306)/uaa?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	} else {
+
+	}
+}
+
 func main() {
 	fmt.Println("Webserver-go starts...")
 	fmt.Println(" * static file serves at http://0.0.0.0:8080/")
