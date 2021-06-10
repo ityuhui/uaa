@@ -9,6 +9,7 @@ import (
 )
 
 var g_sqlDb *sql.DB
+var sqlDberr error
 
 const (
 	USER_NAME = "uaa"
@@ -21,38 +22,37 @@ const (
 
 func connectDB() {
 	dbDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", USER_NAME, PASS_WORD, HOST, PORT, DATABASE, CHARSET)
-	g_sqlDb, err := sql.Open("mysql", dbDSN)
-	if err != nil {
-		panic(err)
+	g_sqlDb, sqlDberr = sql.Open("mysql", dbDSN)
+	if sqlDberr != nil {
+		panic(sqlDberr)
 	} else {
 		fmt.Println("Open DB successfully.")
 	}
-	defer g_sqlDb.Close()
 	g_sqlDb.SetConnMaxLifetime(time.Minute * 3)
 	g_sqlDb.SetMaxOpenConns(10)
 	g_sqlDb.SetMaxIdleConns(10)
 
-	err = g_sqlDb.Ping()
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+	sqlDberr = g_sqlDb.Ping()
+	if sqlDberr != nil {
+		panic(sqlDberr.Error()) // proper error handling instead of panic in your app
 	} else {
 		fmt.Println("Ping DB successfully.")
 	}
 }
 
-func StructQueryAllField() []*User {
-
-	// 通过切片存储
+func UserQueryAllField() []*User {
 	users := make([]*User, 0)
-	fmt.Println("111")
-	rows, _ := g_sqlDb.Query("SELECT * FROM `users` limit ?", 100)
-	fmt.Println("222")
-	// 遍历
-	var user User
+	rows, err := g_sqlDb.Query("SELECT * FROM `users` limit ?", 100)
+	if err != nil {
+		fmt.Printf("query failed, err:%v\n", err)
+		return nil
+	}
+	defer rows.Close()
 	for rows.Next() {
+		var user User
 		rows.Scan(&user.Id, &user.Name, &user.Password)
+		fmt.Printf("id:%d name:%s password:%s\n", user.Id, user.Name, user.Password)
 		users = append(users, &user)
 	}
-	fmt.Println("333")
 	return users
 }

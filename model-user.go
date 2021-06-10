@@ -1,7 +1,7 @@
 package main
 
 type User struct {
-	Id       string
-	Name     string
-	Password string
+	Id       int64  `db:"id"`
+	Name     string `db:"name"`
+	Password string `db:"password"`
 }
