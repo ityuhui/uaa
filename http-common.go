@@ -7,6 +7,7 @@ import (
 
 func startAPIServer() {
 	fmt.Println("REST API server: http://0.0.0.0:8080/api")
+	rtr := mux.NewRouter()
 	initStaticFileServer()
 	initUserAPIEndpoint()
 	http.ListenAndServe(":8080", nil)

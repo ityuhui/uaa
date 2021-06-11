@@ -7,25 +7,32 @@ import (
 )
 
 func initUserAPIEndpoint() {
-	http.HandleFunc("/api/user", userHandler)
+	rtr.HandleFunc("/api/user/{id:[0-9]+}", userHandler)
+	http.Handle("/", rtr)
 	printUserEndpoint()
 }
 
 func printUserEndpoint() {
-	fmt.Println("")
-	fmt.Println("User")
-	fmt.Println("POST /api/user Create")
-	fmt.Println("PUT /api/user/{id} Update")
-	fmt.Println("DELETE /user/{id} Delete")
-	fmt.Println("GET /api/user/{id} Get")
-	fmt.Println("GET /api/user List")
-	fmt.Println("-----------------")
+	fmt.Print(`User
+POST /api/user Create
+PUT /api/user/{id} Update
+PUT /api/user/{id} Update
+PUT /api/user/{id} Update
+DELETE /user/{id} Delete
+GET /api/user/{id} Get
+GET /api/user List
+-----------------
+`)
 }
 
 func userHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: /api/user")
 	AllowCrossDomain(w)
 	switch r.Method {
+	case "POST":
+		createUser()
+	case "DELETE":
+		deleteUser()
 	case "GET":
 		users := UserQueryAllField()
 		for _, user := range users {
