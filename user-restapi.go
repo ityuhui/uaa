@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func initUserAPIEndpoint() {
-	rtr.HandleFunc("/api/user/{id:[0-9]+}", userHandler)
-	http.Handle("/", rtr)
+func initUserAPIEndpoint(r *gin.Engine) {
+	r.GET("/api/user", listUserHandler)
+	r.GET("/api/user/:id", getUserHandler)
 	printUserEndpoint()
 }
 
@@ -25,20 +26,19 @@ GET /api/user List
 `)
 }
 
-func userHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: /api/user")
-	AllowCrossDomain(w)
-	switch r.Method {
-	case "POST":
-		createUser()
-	case "DELETE":
-		deleteUser()
-	case "GET":
-		users := UserQueryAllField()
-		for _, user := range users {
-			fmt.Printf("id: %v, name: %v, password: %v\n", user.Id, user.Name, user.Password)
-		}
-		bytes, _ := json.Marshal(users)
-		fmt.Fprint(w, string(bytes))
+func listUserHandler(c *gin.Context) {
+	fmt.Println("Endpoint Hit: /api/user/")
+	users := UserQueryAllField()
+	for _, user := range users {
+		fmt.Printf("id: %v, name: %v, password: %v\n", user.Id, user.Name, user.Password)
 	}
+	bytes, _ := json.Marshal(users)
+	c.JSON(200, string(bytes))
+}
+
+func getUserHandler(c *gin.Context) {
+	fmt.Println("Endpoint Hit: /api/user/:id")
+	uid := c.Param("id")
+	fmt.Println(uid)
+	c.JSON(200, uid)
 }
