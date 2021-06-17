@@ -1,15 +1,15 @@
 #! /bin/bash
 
-BIN=./webserver-go
+BIN=./uaa
 
 if [ ! -e $BIN -o ! -f $BIN ]; then
-	#CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
-	go build -ldflags="-extldflags=-static" -tags sqlite_omit_load_extension
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
+	#go build -ldflags="-extldflags=-static" -tags sqlite_omit_load_extension
 fi
 
 if [ -e $BIN -a -f $BIN ]; then
     echo "Build image for $BIN"
-    docker build -t ityuhui/webserver-go . \
+    docker build -t ityuhui/uaa:v210617 . \
 	--network host \
 	--build-arg HTTP_PROXY=$http_proxy \
 	--build-arg HTTPS_PROXY=$http_proxy \

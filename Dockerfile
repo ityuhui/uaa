@@ -1,4 +1,4 @@
 FROM scratch
-COPY webserver-go /
+COPY uaa /
 COPY public /public
-ENTRYPOINT ["/webserver-go"]
+ENTRYPOINT ["/uaa"]
